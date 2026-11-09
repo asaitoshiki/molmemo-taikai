@@ -1,0 +1,48 @@
+# Android の APK を作る。GitHub のランナーには Android SDK が入っているため、
+# 手元に Android Studio がなくてもここでビルドできる。
+# Actions タブの "Android APK" から実行し、成果物の apk を受け取る。
+name: Android APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # ランナーには Android SDK が入っているので、使用許諾と不足分だけ整える
+      - name: Android SDK を整える
+        run: |
+          SDKMANAGER=$(ls "$ANDROID_HOME"/cmdline-tools/*/bin/sdkmanager | head -1)
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" "platforms;android-36"
+
+      - run: npm ci
+
+      - name: Web をビルドして android へ反映
+        run: npm run sync
+
+      - name: APK を作る
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: molmemo-taikai-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error

@@ -1,0 +1,194 @@
+@import 'tailwindcss';
+
+/*
+ * 配色は「晴れた日の芝生と、白木のスキットル」。クリーム色の地に芝の緑を主役にし、
+ * 木の色と日なたのオレンジで楽しさを足す。角は丸く、押せるものには厚み（下の影）を付ける。
+ * 文字は丸ゴシック、数字はころんとした書体にして、外で遊ぶ道具らしく軽やかに見せる。
+ */
+@theme {
+  --color-paper: #fff8ec;
+  --color-surface: #ffffff;
+  --color-ink: #23312b;
+  --color-muted: #6c776f;
+  --color-faint: #a5ada7;
+  --color-rule: #ece2cf;
+  --color-accent: #21844d;
+  --color-accent-deep: #166238;
+  --color-accent-soft: #ddf2e4;
+  --color-alert: #cf4430;
+  --color-sun: #ffb238;
+  --color-sun-deep: #d98a12;
+  --color-sun-soft: #fff0d1;
+  --color-wood: #f4dcae;
+  --color-wood-deep: #d4a964;
+
+  --radius: 0.875rem;
+
+  --font-sans:
+    'Zen Maru Gothic', 'Hiragino Maru Gothic ProN', 'Hiragino Sans', 'Noto Sans JP', system-ui,
+    sans-serif;
+  /* 数字と見出し。英数字はころんとした Fredoka、日本語は丸ゴシックで受ける */
+  --font-serif: 'Fredoka', 'Zen Maru Gothic', 'Hiragino Maru Gothic ProN', sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1.7;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* iOS のノッチ・ホームインジケータを避ける */
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* 数字が縦に揃うようにする */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 小さな見出しラベル。字間を開けて本文と役割を分ける。色は使う側で決める */
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+/* 押せるものの厚み。押すと沈む。色は使う側で --press に入れる */
+.press {
+  box-shadow: 0 4px 0 var(--press, var(--color-rule));
+  transition:
+    transform 0.08s ease-out,
+    box-shadow 0.08s ease-out;
+}
+
+.press:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--press, var(--color-rule));
+}
+
+button {
+  font-family: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/*
+ * 得点が入った瞬間の合図。派手にせず、見逃さない程度にとどめる。
+ * 動きを減らす設定の人には下の規則で止まる。
+ */
+@keyframes score-rise {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 4px) scale(0.92);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -2px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -26px) scale(1);
+  }
+}
+
+@keyframes chip-pop {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.16);
+  }
+}
+
+@keyframes row-flash {
+  0% {
+    background-color: var(--color-accent-soft);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes row-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes turn-call {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+  }
+  12% {
+    opacity: 1;
+    transform: translateY(0) scale(1.04);
+  }
+  20%,
+  75% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px) scale(1);
+  }
+}
+
+/* 手番の知らせ。少し見せてから消える */
+.turn-call {
+  animation: turn-call 1.6s ease-out forwards;
+}
+
+.effect-rise {
+  animation: score-rise 1s ease-out forwards;
+}
+
+.effect-pop {
+  animation: chip-pop 0.45s ease-out;
+}
+
+.effect-row {
+  animation: row-flash 0.9s ease-out;
+}
+
+.effect-row-in {
+  animation: row-in 0.3s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
