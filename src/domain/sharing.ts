@@ -5,7 +5,7 @@
 export const PUBLIC_WEB_URL = 'https://asaitoshiki.github.io/molmemo-taikai/'
 
 /** 普段の試合を記録するモルメモ本体。観戦の画面もこちらにある */
-export const CASUAL_APP_URL = 'https://asaitoshiki.github.io/molkkyscore/'
+export const CASUAL_APP_URL = 'https://molmemo.pages.dev/'
 
 /** 観戦できる場所。鍵は推測できないランダム値で、知っている人だけが見られる */
 export const watchUrl = (shareId: string) => `${CASUAL_APP_URL}#/watch/${shareId}`
